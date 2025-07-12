@@ -1,5 +1,5 @@
-const server = "http://localhost:8787";
-const version = "v1";
+const server = process.env.REACT_APP_SERVER_URL;
+const version = process.env.REACT_APP_SERVER_VERSION;
 
 export default {
     map: `${server}/${version}/map.geojson`,
