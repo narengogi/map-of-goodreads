@@ -17,10 +17,6 @@ function App() {
         version: 8,
         glyphs: config.glyphs,
         sources: {
-          // map: {
-          //   type: 'geojson',
-          //   data: config.map,
-          // }
           map: {
             type: 'vector',
             tiles: [config.vectorTiles],
@@ -36,16 +32,6 @@ function App() {
               'background-color': '#ffdea8'
             }
           },
-          // {
-          //   id: 'map',
-          //   type: 'fill',
-          //   source: 'map',
-          //   'source-layer': 'map',
-          //   paint: {
-          //     'fill-color': '#000',
-          //     'fill-opacity': 0.5,
-          //   }
-          // },
           {
             id: 'nodes-layer',
             type: 'circle',
@@ -66,6 +52,19 @@ function App() {
             "source-layer": "points-data",
             "layout": {
               "text-field": "{id}",
+              "text-offset": [0, 1]
+            }
+          },
+          {
+            "id": "edges-layer",
+            "type": "line",
+            "source": "map",
+            "source-layer": "points-data",
+            "filter": ["==", "$type", "LineString"],
+            "minzoom": 7,
+            "layout": {
+              "line-cap": "round",
+              "line-join": "round",
             }
           }
         ]
