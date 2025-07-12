@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import Map from './Map';
+import App from './App';
 import { checkIfWebGLSupported } from './utils';
 import UnsupportedBrowser from './UnsupportedBrowser';
 
@@ -11,7 +11,7 @@ const isWebGLSupported = checkIfWebGLSupported();
 
 root.render(
   <React.StrictMode>
-    {isWebGLSupported ? <Map /> : <UnsupportedBrowser />}
+    {isWebGLSupported ? <App /> : <UnsupportedBrowser />}
   </React.StrictMode>
 );
 
