@@ -8,8 +8,13 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions: # Add this permissions block
+      contents: write # Grant write permission for repository content
+      pages: write    # Grant write permission for GitHub Pages
+      id-token: write # Required for deploying to GitHub Pages (OIDC)
+
     steps:
-      - name: Checkout 
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -27,4 +32,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build # Adjust this if your build output directory is different (e.g., ./dist) 
+          publish_dir: ./build # Adjust this if your build output directory is different (e.g., ./dist)
