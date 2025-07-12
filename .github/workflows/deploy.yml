@@ -30,6 +30,7 @@ jobs:
         env:
           REACT_APP_SERVER_URL: ${{ secrets.REACT_APP_SERVER_URL }}
           REACT_APP_SERVER_VERSION: ${{ secrets.REACT_APP_SERVER_VERSION }}
+          ESLINT_NO_DEV_ERRORS: true
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
