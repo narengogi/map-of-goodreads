@@ -1,1 +1,1 @@
-# good-earth-ui
+# Map of Goodreads

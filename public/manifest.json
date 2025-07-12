@@ -1,0 +1,27 @@
+{
+  "short_name": "map of goodreads",
+  "name": "map of goodreads",
+  "description": "A map of 2.2 million goodreads books, and how they relate to each other",
+  "author": "Narendranath Gogineni",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo264.png",
+      "type": "image/png",
+      "sizes": "264x264"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#ffdea8",
+  "background_color": "#ffdea8"
+}
