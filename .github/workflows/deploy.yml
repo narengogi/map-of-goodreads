@@ -27,6 +27,9 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          REACT_APP_SERVER_URL: ${{ secrets.REACT_APP_SERVER_URL }}
+          REACT_APP_SERVER_VERSION: ${{ secrets.REACT_APP_SERVER_VERSION }}
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
