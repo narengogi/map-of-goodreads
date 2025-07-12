@@ -1,0 +1,2 @@
+This is a website visualizing all the books on goodreads.
+It is made by computing the similarity between books based on user shelves.
