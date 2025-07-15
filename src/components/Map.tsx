@@ -5,9 +5,11 @@ import config from "../config";
 
 function Map({
   searchQuery,
+  selectedBook,
   setSelectedBook,
 }: {
   searchQuery: string;
+  selectedBook: string | null;
   setSelectedBook: (book: string) => void;
 }) {
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -15,17 +17,10 @@ function Map({
   const [map, setMap] = useState<maplibregl.Map | null>(null);
 
   useEffect(() => {
-    if (!map) return;
-    console.log(searchQuery);
-    const matches = map.queryRenderedFeatures({
-      layers: ["selected-node-layer"],
-      filter: ["==", "id", String(searchQuery)],
-    });
-    console.log(matches);
-    if (matches.length) {
-      map.setFilter("selected-node-layer", ["==", "id", matches[0].properties.id]);
-    }
-  }, [searchQuery]);
+    if (!map || !selectedBook) return;
+    map.setFilter("selected-node-layer", ["==", ["get", "id"], selectedBook]);
+    map.setFilter("selected-node-edges-layer", ["any", ["==", ["get", "source"], selectedBook], ["==", ["get", "target"], selectedBook]]);
+  }, [selectedBook]);
 
   useEffect(() => {
     const map = new maplibregl.Map({
@@ -40,7 +35,7 @@ function Map({
           map: {
             type: "vector",
             tiles: [config.vectorTiles],
-            // minzoom: 0,
+            // minzoom: 4,
             maxzoom: 10,
           },
         },
@@ -76,18 +71,6 @@ function Map({
             },
           },
           {
-            id: "edges-layer",
-            type: "line",
-            source: "map",
-            "source-layer": "points-data",
-            filter: ["==", "$type", "LineString"],
-            minzoom: 7,
-            layout: {
-              "line-cap": "round",
-              "line-join": "round",
-            },
-          },
-          {
             id: "selected-node-layer",
             type: "circle",
             source: "map",
@@ -98,6 +81,17 @@ function Map({
               "circle-color": "#000",
               "circle-stroke-width": 2,
               "circle-stroke-color": "#fff",
+            },
+          },
+          {
+            id: "selected-node-edges-layer",
+            type: "line",
+            source: "map",
+            "source-layer": "points-data",
+            filter: ["==", "$id", "00000"],
+            paint: {
+              "line-color": "#000",
+              "line-width": 2,
             },
           },
         ],
@@ -140,8 +134,9 @@ function Map({
     map.on("click", (e) => {
       const nearestCity = findNearestCity(e.point);
       if (!nearestCity) return;
-      console.log(nearestCity);
+      // console.log(nearestCity);
       const id = nearestCity.properties.id;
+      setSelectedBook(String(id));
       // open contextmenu
     });
 

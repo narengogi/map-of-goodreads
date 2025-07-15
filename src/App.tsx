@@ -10,7 +10,7 @@ export default function App() {
   return (
     <div id="main-container" style={{height: "100vh", width: "100vw"}}>
       <SearchBox searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-      <Map searchQuery={searchQuery} setSelectedBook={setSelectedBook} />
+      <Map searchQuery={searchQuery} selectedBook={selectedBook} setSelectedBook={setSelectedBook} />
       {/* <BookDetailsDrawer selectedBook={selectedBook} setSelectedBook={setSelectedBook} /> */}
     </div>
   );
