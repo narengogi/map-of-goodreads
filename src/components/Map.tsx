@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, memo, useState } from "react";
-import maplibregl from "maplibre-gl";
+import maplibregl, { MapGeoJSONFeature } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import config from "../config";
 
@@ -9,18 +9,44 @@ function Map({
   setSelectedBook,
 }: {
   searchQuery: string;
-  selectedBook: string | null;
-  setSelectedBook: (book: string) => void;
+  selectedBook: MapGeoJSONFeature | null;
+  setSelectedBook: (book: MapGeoJSONFeature | null) => void;
 }) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const [map, setMap] = useState<maplibregl.Map | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
 
   useEffect(() => {
     if (!map || !selectedBook) return;
-    map.setFilter("selected-node-layer", ["==", ["get", "id"], selectedBook]);
-    map.setFilter("selected-node-edges-layer", ["any", ["==", ["get", "source"], selectedBook], ["==", ["get", "target"], selectedBook]]);
+    map.setFilter("selected-node-layer", ["==", ["get", "id"], selectedBook.properties.id]);
+    if (selectedGroup != selectedBook.properties.groupId) {
+      setSelectedGroup(selectedBook.properties.groupId);
+      
+    }
+    map.setFilter("selected-node-edges-layer", ["any", ["==", ["get", "source"], selectedBook.properties.id], ["==", ["get", "target"], selectedBook.properties.id]]);
   }, [selectedBook]);
+
+  useEffect(() => {
+    if (!map || !selectedGroup) return;
+    if (map.getSource("edges")) {
+      map.removeSource("edges");
+      map.removeLayer("edges-layer");
+    }
+    map.addSource("edges", {
+      type: "geojson",
+      data: `${config.edgesBasePath}edges_${selectedGroup}.geojson`,
+    });
+    map.addLayer({
+      id: "edges-layer",
+      type: "line",
+      source: "edges",
+      paint: {
+        "line-color": "#000",
+        "line-width": 2,
+      },
+    });
+  }, [selectedGroup]);
 
   useEffect(() => {
     const map = new maplibregl.Map({
@@ -135,8 +161,7 @@ function Map({
       const nearestCity = findNearestCity(e.point);
       if (!nearestCity) return;
       // console.log(nearestCity);
-      const id = nearestCity.properties.id;
-      setSelectedBook(String(id));
+      setSelectedBook(nearestCity);
       // open contextmenu
     });
 
