@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/good-earth-ui/static/css/main.35071eb9.css",
-    "main.js": "/good-earth-ui/static/js/main.43ade7a5.js",
+    "main.js": "/good-earth-ui/static/js/main.440846bc.js",
     "index.html": "/good-earth-ui/index.html",
     "main.35071eb9.css.map": "/good-earth-ui/static/css/main.35071eb9.css.map",
-    "main.43ade7a5.js.map": "/good-earth-ui/static/js/main.43ade7a5.js.map"
+    "main.440846bc.js.map": "/good-earth-ui/static/js/main.440846bc.js.map"
   },
   "entrypoints": [
     "static/css/main.35071eb9.css",
-    "static/js/main.43ade7a5.js"
+    "static/js/main.440846bc.js"
   ]
 }
