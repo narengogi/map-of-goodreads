@@ -41,6 +41,7 @@ function Map({
       id: "edges-layer",
       type: "line",
       source: "edges",
+      filter: ["all", ["==", "$type", "LineString"], ["==", "source", selectedBook?.properties.id] ],
       paint: {
         "line-color": "#000",
         "line-width": 2,
@@ -107,17 +108,6 @@ function Map({
               "circle-color": "#000",
               "circle-stroke-width": 2,
               "circle-stroke-color": "#fff",
-            },
-          },
-          {
-            id: "selected-node-edges-layer",
-            type: "line",
-            source: "map",
-            "source-layer": "points-data",
-            filter: ["==", "$id", "00000"],
-            paint: {
-              "line-color": "#000",
-              "line-width": 2,
             },
           },
         ],
