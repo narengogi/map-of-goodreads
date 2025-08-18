@@ -2,7 +2,7 @@
   "name": "ui",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://narengogi.github.io/good-earth-ui",
+  "homepage": "https://narengogi.github.io/map-of-goodreads",
   "dependencies": {
     "maplibre-gl": "^5.6.1",
     "react": "^19.1.0",

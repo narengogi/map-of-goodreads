@@ -1,0 +1,88 @@
+.drawer-container {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 40%; /* Default for large screens */
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.85); /* Translucent background */
+  backdrop-filter: blur(8px); /* Blur effect for content behind */
+  box-shadow: -4px 0 15px rgba(0, 0, 0, 0.2); /* Stronger shadow */
+  transform: translateX(100%);
+  transition: transform 0.4s ease-in-out, box-shadow 0.4s ease-in-out;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid rgba(255, 255, 255, 0.2); /* Subtle border for glass effect */
+}
+
+.drawer-container.open {
+  transform: translateX(0);
+}
+
+.drawer-header {
+  padding: 15px 20px;
+  display: flex;
+  justify-content: flex-end;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.7); /* Slightly less translucent header */
+}
+
+.drawer-header button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #555;
+  transition: color 0.2s ease-in-out;
+}
+
+.drawer-header button:hover {
+  color: #000;
+}
+
+.drawer-content {
+  padding: 20px;
+  overflow-y: auto;
+  color: #333;
+}
+
+.drawer-content h2 {
+  color: #222;
+  margin-bottom: 15px;
+  font-size: 1.8em;
+}
+
+.drawer-content p {
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+
+.drawer-content a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.drawer-content a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .drawer-container {
+    width: 100%;
+    height: 40%; /* Max 40% for small screens */
+    bottom: 0;
+    top: auto;
+    right: 0;
+    transform: translateY(100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    border-left: none;
+  }
+
+  .drawer-container.open {
+    transform: translateY(0);
+  }
+
+  .drawer-header {
+    justify-content: flex-end; /* Keep close button to the right */
+  }
+} 
