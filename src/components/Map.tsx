@@ -15,39 +15,38 @@ function Map({
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const [map, setMap] = useState<maplibregl.Map | null>(null);
-  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
 
   useEffect(() => {
     if (!map || !selectedBook) return;
-    map.setFilter("selected-node-layer", ["==", ["get", "id"], selectedBook.properties.id]);
-    if (selectedGroup != selectedBook.properties.groupId) {
-      setSelectedGroup(selectedBook.properties.groupId);
-      
-    }
-    map.setFilter("selected-node-edges-layer", ["any", ["==", ["get", "source"], selectedBook.properties.id], ["==", ["get", "target"], selectedBook.properties.id]]);
-  }, [selectedBook]);
+    const selectedGroupId = selectedBook.properties.groupId;
+    map.setFilter("selected-node-layer", [
+      "==",
+      ["get", "id"],
+      selectedBook.properties.id,
+    ]);
+    map.setFilter("selected-node-edges-layer", [
+      "any",
+      ["==", ["get", "source"], selectedBook.properties.id],
+      ["==", ["get", "target"], selectedBook.properties.id],
+    ]);
 
-  useEffect(() => {
-    if (!map || !selectedGroup) return;
-    if (map.getSource("edges")) {
-      map.removeSource("edges");
-      map.removeLayer("edges-layer");
+    const source = map.getSource("edges");
+    console.log(selectedGroupId);
+    // @ts-ignore
+    console.log(source._data.split("_")[1]);
+    // @ts-ignore
+    if (source._data.split("_")[1].split(".")[0] != selectedGroupId) {
+      // @ts-ignore
+      source.setData(
+        `${config.edgesBasePath}subgraph_${selectedGroupId}.geojson`
+      );
     }
-    map.addSource("edges", {
-      type: "geojson",
-      data: `${config.edgesBasePath}edges_${selectedGroup}.geojson`,
-    });
-    map.addLayer({
-      id: "edges-layer",
-      type: "line",
-      source: "edges",
-      filter: ["all", ["==", "$type", "LineString"], ["==", "source", selectedBook?.properties.id] ],
-      paint: {
-        "line-color": "#000",
-        "line-width": 2,
-      },
-    });
-  }, [selectedGroup]);
+    map.setFilter("edges-layer", [
+      "all",
+      ["==", "$type", "LineString"],
+      ["==", "source", selectedBook?.properties.id],
+    ]);
+  }, [selectedBook]);
 
   useEffect(() => {
     const map = new maplibregl.Map({
@@ -64,6 +63,10 @@ function Map({
             tiles: [config.vectorTiles],
             // minzoom: 4,
             maxzoom: 10,
+          },
+          edges: {
+            type: "geojson",
+            data: `${config.edgesBasePath}subgraph_1.geojson`,
           },
         },
         layers: [
@@ -93,7 +96,7 @@ function Map({
             source: "map",
             "source-layer": "points-data",
             layout: {
-              "text-field": "{id}",
+              "text-field": "{title}",
               "text-offset": [0, 1],
             },
           },
@@ -110,6 +113,20 @@ function Map({
               "circle-stroke-color": "#fff",
             },
           },
+          {
+            id: "edges-layer",
+            type: "line",
+            source: "edges",
+            filter: [
+              "all",
+              ["==", "$type", "LineString"],
+              ["==", "source", "00000"],
+            ],
+            paint: {
+              "line-color": "#000",
+              "line-width": 2,
+            },
+          }
         ],
       },
     });
@@ -150,7 +167,6 @@ function Map({
     map.on("click", (e) => {
       const nearestCity = findNearestCity(e.point);
       if (!nearestCity) return;
-      // console.log(nearestCity);
       setSelectedBook(nearestCity);
       // open contextmenu
     });
