@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/good-earth-ui/static/css/main.35071eb9.css",
-    "main.js": "/good-earth-ui/static/js/main.440846bc.js",
-    "index.html": "/good-earth-ui/index.html",
-    "main.35071eb9.css.map": "/good-earth-ui/static/css/main.35071eb9.css.map",
-    "main.440846bc.js.map": "/good-earth-ui/static/js/main.440846bc.js.map"
+    "main.css": "/map-of-goodreads/static/css/main.5d5efe53.css",
+    "main.js": "/map-of-goodreads/static/js/main.89b6d39d.js",
+    "index.html": "/map-of-goodreads/index.html",
+    "main.5d5efe53.css.map": "/map-of-goodreads/static/css/main.5d5efe53.css.map",
+    "main.89b6d39d.js.map": "/map-of-goodreads/static/js/main.89b6d39d.js.map"
   },
   "entrypoints": [
-    "static/css/main.35071eb9.css",
-    "static/js/main.440846bc.js"
+    "static/css/main.5d5efe53.css",
+    "static/js/main.89b6d39d.js"
   ]
 }
