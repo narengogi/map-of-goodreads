@@ -27,13 +27,9 @@ function Map({
     map.setFilter("selected-node-edges-layer", [
       "any",
       ["==", ["get", "source"], selectedBook.properties.id],
-      ["==", ["get", "target"], selectedBook.properties.id],
     ]);
 
     const source = map.getSource("edges");
-    console.log(selectedGroupId);
-    // @ts-ignore
-    console.log(source._data.split("_")[1]);
     // @ts-ignore
     if (source._data.split("_")[1].split(".")[0] != selectedGroupId) {
       // @ts-ignore
@@ -53,7 +49,7 @@ function Map({
       container: mapContainer.current!,
       hash: true,
       center: [0, 0],
-      zoom: 2,
+      zoom: 4,
       style: {
         version: 8,
         glyphs: config.glyphs,
@@ -168,7 +164,6 @@ function Map({
       const nearestCity = findNearestCity(e.point);
       if (!nearestCity) return;
       setSelectedBook(nearestCity);
-      // open contextmenu
     });
 
     mapRef.current = map;
