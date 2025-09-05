@@ -9,7 +9,7 @@ export default function App() {
   const [selectedBook, setSelectedBook] = useState<MapGeoJSONFeature | null>(null);
 
   return (
-    <div id="main-container" style={{height: "100vh", width: "100vw"}}>
+    <div id="main-container" style={{height: "100vh", width: "100vw", margin: "-8px"}}>
       {/* <SearchBox searchQuery={searchQuery} setSearchQuery={setSearchQuery} /> */}
       <Map searchQuery={searchQuery} selectedBook={selectedBook} setSelectedBook={setSelectedBook} />
       <BookDetailsDrawer selectedBook={selectedBook} setSelectedBook={setSelectedBook} />
