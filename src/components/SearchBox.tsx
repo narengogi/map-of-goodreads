@@ -11,7 +11,7 @@ declare global {
 const trackSearchEvent = (searchQuery: string) => {
   console.log('tracking search event', searchQuery);
   if (typeof window !== 'undefined' && window.gtag) {
-    console.log('tracking search event', searchQuery);
+    console.log('adding search event', searchQuery);
     window.gtag('event', 'search', {
       search_term: searchQuery,
       event_category: 'engagement',
