@@ -1,6 +1,34 @@
 import { useState, useEffect, useRef } from "react";
 import { server } from "../config";
 
+// Google Analytics helper function
+declare global {
+  interface Window {
+    gtag: (...args: any[]) => void;
+  }
+}
+
+const trackSearchEvent = (searchQuery: string) => {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', 'search', {
+      search_term: searchQuery,
+      event_category: 'engagement',
+      event_label: 'book_search'
+    });
+  }
+};
+
+const trackBookSelectionEvent = (bookTitle: string) => {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', 'select_content', {
+      content_type: 'book',
+      item_id: bookTitle,
+      event_category: 'engagement',
+      event_label: 'book_selection'
+    });
+  }
+};
+
 // Custom hook for debouncing values
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
@@ -40,6 +68,11 @@ export default function SearchBox({ setSelectedCoordinates }: SearchBoxProps) {
         .then(response => response.json())
         .then(data => setBooksMap(data))
         .catch(error => console.error('Error fetching books map:', error));
+      
+      // Track search event if query is meaningful (at least 2 characters)
+      if (debouncedSearchQuery.trim().length >= 2) {
+        trackSearchEvent(debouncedSearchQuery.trim());
+      }
     }
   }, [debouncedSearchQuery]);
 
@@ -73,6 +106,9 @@ export default function SearchBox({ setSelectedCoordinates }: SearchBoxProps) {
     setSearchQuery(book[0]);
     setShowDropdown(false);
     setSelectedIndex(-1);
+    
+    // Track book selection event
+    trackBookSelectionEvent(book[0]);
   };
 
   // Handle keyboard navigation
