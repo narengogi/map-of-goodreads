@@ -4,17 +4,23 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import config from "../config";
 
 function Map({
-  searchQuery,
   selectedBook,
   setSelectedBook,
+  selectedCoordinates,
 }: {
-  searchQuery: string;
   selectedBook: MapGeoJSONFeature | null;
   setSelectedBook: (book: MapGeoJSONFeature | null) => void;
+  selectedCoordinates: [number, number] | null;
 }) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const [map, setMap] = useState<maplibregl.Map | null>(null);
+
+  useEffect(() => {
+    if (!map || !selectedCoordinates) return;
+    map.setCenter(selectedCoordinates);
+    map.setZoom(8);
+  }, [selectedCoordinates]);
 
   useEffect(() => {
     if (!map || !selectedBook) return;

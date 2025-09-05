@@ -1,4 +1,4 @@
-const server = process.env.REACT_APP_SERVER_URL;
+export const server = process.env.REACT_APP_SERVER_URL;
 const version = process.env.REACT_APP_SERVER_VERSION;
 
 const config = {
