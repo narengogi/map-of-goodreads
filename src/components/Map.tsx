@@ -58,7 +58,7 @@ function Map({
             type: "vector",
             tiles: [config.vectorTiles],
             // minzoom: 4,
-            maxzoom: 10,
+            maxzoom: 9,
           },
           edges: {
             type: "geojson",
