@@ -15,8 +15,6 @@ const trackSearchEvent = (searchQuery: string) => {
     console.log('adding search event', searchQuery);
     window.gtag('event', 'search', {
       search_term: searchQuery,
-      event_category: 'engagement',
-      event_label: 'book_search'
     });
   }
 };
@@ -26,8 +24,6 @@ const trackBookSelectionEvent = (bookTitle: string) => {
     window.gtag('event', 'select_content', {
       content_type: 'book',
       item_id: bookTitle,
-      event_category: 'engagement',
-      event_label: 'book_selection'
     });
   }
 };
