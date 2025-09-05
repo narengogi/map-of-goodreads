@@ -18,8 +18,12 @@ function Map({
 
   useEffect(() => {
     if (!map || !selectedCoordinates) return;
-    map.setCenter(selectedCoordinates);
-    map.setZoom(8);
+    map.flyTo({
+      center: selectedCoordinates,
+      zoom: 11,
+      essential: true, // this animation is considered essential for the user experience
+      duration: 1000 // duration of the animation in milliseconds
+    });
   }, [selectedCoordinates]);
 
   useEffect(() => {
@@ -64,7 +68,7 @@ function Map({
             type: "vector",
             tiles: [config.vectorTiles],
             // minzoom: 4,
-            maxzoom: 8,
+            maxzoom: 9,
           },
           edges: {
             type: "geojson",
