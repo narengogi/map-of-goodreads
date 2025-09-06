@@ -2,6 +2,7 @@ import React, { useEffect, useRef, memo, useState } from "react";
 import maplibregl, { MapGeoJSONFeature } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import config from "../config";
+import "./Map.css";
 
 function Map({
   selectedBook,
@@ -63,6 +64,7 @@ function Map({
       style: {
         version: 8,
         glyphs: config.glyphs,
+        
         sources: {
           map: {
             type: "vector",
@@ -80,7 +82,7 @@ function Map({
             id: "background",
             type: "background",
             paint: {
-              "background-color": "#ffdea8",
+              "background-color": "#1E1B16",
             },
           },
           {
@@ -91,7 +93,7 @@ function Map({
             filter: ["==", "$type", "Point"],
             paint: {
               "circle-radius": 6,
-              "circle-color": "#000",
+              "circle-color": "#34D399",
               "circle-stroke-width": 2,
               "circle-stroke-color": "#fff",
             },
@@ -103,8 +105,11 @@ function Map({
             "source-layer": "points-data",
             layout: {
               "text-field": "{title}",
-              "text-offset": [0, 1],
+              "text-offset": [0, 1.5],
             },
+            paint: {
+              "text-color": "#E5E7EB"
+            }
           },
           {
             id: "selected-node-layer",
@@ -114,9 +119,9 @@ function Map({
             filter: ["==", "id", "13642"],
             paint: {
               "circle-radius": 10,
-              "circle-color": "#000",
+              "circle-color": "#34D399",
               "circle-stroke-width": 2,
-              "circle-stroke-color": "#fff",
+              "circle-stroke-color": "#F97316",
             },
           },
           {
@@ -129,7 +134,7 @@ function Map({
               ["==", "source", "00000"],
             ],
             paint: {
-              "line-color": "#000",
+              "line-color": "#D6D3D1",
               "line-width": 2,
             },
           }

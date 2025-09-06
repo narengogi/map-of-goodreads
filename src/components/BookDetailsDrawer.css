@@ -4,7 +4,7 @@
   right: 0;
   width: 40%; /* Default for large screens */
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.85); /* Translucent background */
+  background-color: #FDFBF5; /* Light parchment, slightly creamy */
   backdrop-filter: blur(8px); /* Blur effect for content behind */
   box-shadow: -4px 0 15px rgba(0, 0, 0, 0.2); /* Stronger shadow */
   transform: translateX(100%);
@@ -12,7 +12,8 @@
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  border-left: 1px solid rgba(255, 255, 255, 0.2); /* Subtle border for glass effect */
+  border-left: 1px solid #E5E7EB; /* Subtle cool gray lines, minimal distraction */
+  border-radius: 2rem;
 }
 
 .drawer-container.open {
@@ -20,11 +21,9 @@
 }
 
 .drawer-header {
-  padding: 15px 20px;
   display: flex;
   justify-content: flex-end;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  background-color: rgba(255, 255, 255, 0.7); /* Slightly less translucent header */
+  margin-right: 1rem;
 }
 
 .drawer-header button {
@@ -32,22 +31,22 @@
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: #555;
+  color: #6B7280; /* Muted gray */
   transition: color 0.2s ease-in-out;
 }
 
 .drawer-header button:hover {
-  color: #000;
+  color: #F97316; /* Warm orange highlight */
 }
 
 .drawer-content {
   padding: 20px;
   overflow-y: auto;
-  color: #333;
+  color: #1E293B; /* Slate black, high readability */
 }
 
 .drawer-content h2 {
-  color: #222;
+  color: #1E293B; /* Slate black, high readability */
   margin-bottom: 15px;
   font-size: 1.8em;
 }
@@ -55,15 +54,17 @@
 .drawer-content p {
   margin-bottom: 10px;
   line-height: 1.6;
+  color: #6B7280; /* Muted gray for author/ratings */
 }
 
 .drawer-content a {
-  color: #007bff;
+  color: #2563EB; /* Bookish blue */
   text-decoration: none;
 }
 
 .drawer-content a:hover {
   text-decoration: underline;
+  color: #1D4ED8; /* Deeper blue for interaction */
 }
 
 @media (max-width: 768px) {
@@ -74,7 +75,7 @@
     top: auto;
     right: 0;
     transform: translateY(100%);
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    border-top: 1px solid #E5E7EB; /* Subtle cool gray lines */
     border-left: none;
   }
 

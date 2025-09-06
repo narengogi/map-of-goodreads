@@ -16,9 +16,7 @@ export default function BookDetailsDrawer({ selectedBook, setSelectedBook }: { s
         {selectedBook.properties?.author_names && <p>Author(s): {selectedBook.properties?.author_names}</p>}
         {selectedBook.properties?.average_rating && <p>Average Rating: {selectedBook.properties?.average_rating}</p>}
         {selectedBook.properties?.publication_year && <p>Publication Year: {selectedBook.properties?.publication_year}</p>}
-        {selectedBook.properties?.publisher && <p>Publisher: {selectedBook.properties?.publisher}</p>}
         {selectedBook.properties?.description && <p>Description: {selectedBook.properties?.description}</p>}
-        {selectedBook.properties?.id && <p>Goodreads ID: {selectedBook.properties?.id}</p>}
         {selectedBook.properties?.id && <p>Goodreads URL: <a href={goodreadsUrl} target="_blank" rel="noopener noreferrer">{goodreadsUrl}</a></p>}
       </div>
     </div>
