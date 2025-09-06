@@ -20,7 +20,7 @@ function Map({
     if (!map || !selectedCoordinates) return;
     map.flyTo({
       center: selectedCoordinates,
-      zoom: 11,
+      zoom: 14,
       essential: true, // this animation is considered essential for the user experience
       duration: 1000 // duration of the animation in milliseconds
     });
@@ -68,7 +68,7 @@ function Map({
             type: "vector",
             tiles: [config.vectorTiles],
             // minzoom: 4,
-            maxzoom: 8,
+            maxzoom: 15,
           },
           edges: {
             type: "geojson",
