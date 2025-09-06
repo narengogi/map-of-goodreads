@@ -21,7 +21,7 @@ function Map({
     if (!map || !selectedCoordinates) return;
     map.flyTo({
       center: selectedCoordinates,
-      zoom: 14,
+      zoom: 15,
       essential: true, // this animation is considered essential for the user experience
       duration: 1000 // duration of the animation in milliseconds
     });
@@ -59,7 +59,7 @@ function Map({
     const map = new maplibregl.Map({
       container: mapContainer.current!,
       hash: true,
-      center: [0, 0],
+      center: [Math.random() * 360 - 180, Math.random() * 180 - 90],
       zoom: 4,
       style: {
         version: 8,
@@ -140,6 +140,7 @@ function Map({
           }
         ],
       },
+      attributionControl: false,
     });
 
     function findNearestCity(point: maplibregl.Point) {
@@ -180,6 +181,11 @@ function Map({
       if (!nearestCity) return;
       setSelectedBook(nearestCity);
     });
+
+    // map.addControl(new maplibregl.AttributionControl({
+    //   compact: true,
+    //   customAttribution: 'https://github.com/narengogi/map-of-goodreads',
+    // }));
 
     mapRef.current = map;
     setMap(map);
