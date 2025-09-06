@@ -41,10 +41,10 @@ function Map({
 
     const source = map.getSource("edges");
     // @ts-ignore
-    if (source._data.split("_")[1].split(".")[0] != selectedGroupId) {
+    if (source?._data?.split("_")[1]?.split(".")[0] != selectedGroupId) {
       // @ts-ignore
       source.setData(
-        `${config.edgesBasePath}subgraph_${selectedGroupId}.geojson`
+        `${config.edgesBasePath}${selectedGroupId}.geojson`
       );
     }
     map.setFilter("edges-layer", [
