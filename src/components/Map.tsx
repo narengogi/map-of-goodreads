@@ -53,14 +53,22 @@ function Map({
       ["==", "$type", "LineString"],
       ["==", "source", selectedBook?.properties.id],
     ]);
+    console.log(selectedBook.geometry);
+    map.flyTo({
+      // @ts-ignore
+      center: selectedBook.geometry.coordinates,
+      zoom: 14,
+      essential: true, // this animation is considered essential for the user experience
+      duration: 1000 // duration of the animation in milliseconds
+    });
   }, [selectedBook]);
 
   useEffect(() => {
     const map = new maplibregl.Map({
       container: mapContainer.current!,
       hash: true,
-      center: [Math.random() * 360 - 180, Math.random() * 180 - 90],
-      zoom: 4,
+      center: [Math.random() * 180 - 90, 45],
+      zoom: 2,
       style: {
         version: 8,
         glyphs: config.glyphs,
