@@ -1,3 +1,4 @@
+![map of goodreads](https://github.com/narengogi/map-of-goodreads/blob/master/public/outmap-of-goodreads.gif?raw=1)
 # Brief
 - This repository conatins the UI for the map of goodreads
 I made it using react and maplibre js
