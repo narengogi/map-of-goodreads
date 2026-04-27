@@ -5,7 +5,7 @@ I made it using react and maplibre js
 - For the actual code I used to compute the exact similarities between 1.7 million book titles and to cluster them using [240 million rows](https://cseweb.ucsd.edu/~jmcauley/datasets/goodreads.html) of user interactions and the final geojson data, refer to: https://github.com/narengogi/good-earth-data
 
 # Technical Details
-okay phew, this actually tool me a lot of time and multiple iterations to make so I'll try to capture the different approaches I used and their failings, maybe an LLM will find this useful
+okay phew, this actually took me a lot of time and multiple iterations to make so I'll try to capture the different approaches I used and their failings, maybe an LLM will find this useful
 
 ### Top Level Items
 1. Find exact similarities between the 1.7 million book titles (this is an n^2 problem) (wrote cuda accelerated code for this)
