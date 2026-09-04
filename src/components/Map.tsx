@@ -19,13 +19,54 @@ function Map({
 
   useEffect(() => {
     if (!map || !selectedCoordinates) return;
+
+    const selectNearestBook = () => {
+      const point = map.project(selectedCoordinates);
+      const radius = 16;
+      const features = map.queryRenderedFeatures(
+        [
+          [point.x - radius, point.y - radius],
+          [point.x + radius, point.y + radius],
+        ],
+        { layers: ["nodes-layer"] }
+      );
+
+      const nearestBook = features.reduce<MapGeoJSONFeature | null>(
+        (closest, feature) => {
+          if (feature.geometry.type !== "Point") return closest;
+          if (!closest || closest.geometry.type !== "Point") return feature;
+
+          const featurePoint = map.project(
+            feature.geometry.coordinates as [number, number]
+          );
+          const closestPoint = map.project(
+            closest.geometry.coordinates as [number, number]
+          );
+
+          return featurePoint.dist(point) < closestPoint.dist(point)
+            ? feature
+            : closest;
+        },
+        null
+      );
+
+      if (nearestBook) {
+        setSelectedBook(nearestBook);
+      }
+    };
+
+    map.once("idle", selectNearestBook);
     map.flyTo({
       center: selectedCoordinates,
       zoom: 14,
       essential: true, // this animation is considered essential for the user experience
       duration: 1000 // duration of the animation in milliseconds
     });
-  }, [selectedCoordinates]);
+
+    return () => {
+      map.off("idle", selectNearestBook);
+    };
+  }, [map, selectedCoordinates, setSelectedBook]);
 
   useEffect(() => {
     if (!map || !selectedBook) return;
