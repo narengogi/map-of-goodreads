@@ -1,11 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { server } from "../config";
-
-declare global {
-  interface Window {
-    gtag: (...args: any[]) => void;
-  }
-}
+import {
+  trackBookSelectionEvent,
+  trackSearchEvent,
+} from "../analytics";
 
 const SEARCH_BASE_URL = `${server}/v2/search`;
 const MAX_SHARDS_PER_QUERY = 8;
@@ -47,23 +45,6 @@ interface SearchBoxProps {
 
 let manifestPromise: Promise<SearchManifest> | null = null;
 const shardCache = new Map<string, Promise<SearchRow[]>>();
-
-function trackSearchEvent(searchQuery: string) {
-  if (typeof window !== "undefined" && window.gtag) {
-    window.gtag("event", "search", {
-      search_term: searchQuery,
-    });
-  }
-}
-
-function trackBookSelectionEvent(bookTitle: string) {
-  if (typeof window !== "undefined" && window.gtag) {
-    window.gtag("event", "select_content", {
-      content_type: "book",
-      item_id: bookTitle,
-    });
-  }
-}
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);

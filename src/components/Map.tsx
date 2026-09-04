@@ -3,6 +3,10 @@ import maplibregl, { MapGeoJSONFeature } from "maplibre-gl";
 import type { FeatureCollection, LineString } from "geojson";
 import "maplibre-gl/dist/maplibre-gl.css";
 import config from "../config";
+import {
+  trackMapEdgeClickEvent,
+  trackMapNodeClickEvent,
+} from "../analytics";
 import "./Map.css";
 
 function Map({
@@ -137,7 +141,6 @@ function Map({
       ["==", "$type", "LineString"],
       ["==", "source", selectedBook?.properties.id],
     ]);
-    console.log(selectedBook.geometry);
     map.flyTo({
       // @ts-ignore
       center: selectedBook.geometry.coordinates,
@@ -315,17 +318,37 @@ function Map({
       const returnToSelectedNode =
         previousNavigation?.edgeKey === edgeKey &&
         previousNavigation.atOtherNode;
+      const destinationCoordinates = returnToSelectedNode
+        ? selectedCoordinates
+        : otherEndpoint;
+      const bookAtCurrentCamera = findNearestCity(
+        map.project(map.getCenter())
+      );
+      const fromBookTitle = returnToSelectedNode
+        ? String(bookAtCurrentCamera?.properties?.title ?? "")
+        : String(selected.properties?.title ?? "");
 
       map.flyTo({
-        center: returnToSelectedNode
-          ? selectedCoordinates
-          : otherEndpoint,
+        center: destinationCoordinates,
         zoom: 14,
         essential: true,
         duration: 1000,
       });
       map.once("moveend", () => {
         onEdgeNavigateRef.current?.();
+      });
+      map.once("idle", () => {
+        const destinationBook = findNearestCity(
+          map.project(destinationCoordinates)
+        );
+        trackMapEdgeClickEvent({
+          fromBookTitle,
+          toBookTitle: String(
+            destinationBook?.properties?.title ??
+              (returnToSelectedNode ? selected.properties?.title : "")
+          ),
+          returningToSelectedBook: returnToSelectedNode,
+        });
       });
 
       edgeNavigationRef.current = {
@@ -341,6 +364,7 @@ function Map({
     map.on("click", (e) => {
       const nearestCity = findNearestCity(e.point);
       if (nearestCity) {
+        trackMapNodeClickEvent(nearestCity);
         setSelectedBook(nearestCity);
         onNodeSelectedRef.current?.(nearestCity);
         return;
