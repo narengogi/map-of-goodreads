@@ -1,0 +1,155 @@
+.walkthrough {
+  position: fixed;
+  inset: 0;
+  z-index: 2200;
+  pointer-events: none;
+  font-family: inherit;
+}
+
+.walkthrough-dim {
+  position: absolute;
+  inset: 0;
+  background: rgba(7, 10, 9, 0.28);
+}
+
+.walkthrough-focus-ring {
+  position: absolute;
+  border: 2px solid rgba(52, 211, 153, 0.9);
+  border-radius: 12px;
+  box-shadow:
+    0 0 0 5px rgba(52, 211, 153, 0.14),
+    0 0 24px rgba(52, 211, 153, 0.28);
+  opacity: 0;
+}
+
+.walkthrough-search .walkthrough-focus-ring {
+  left: 6px;
+  top: 6px;
+  width: min(368px, calc(100vw - 16px));
+  height: 126px;
+  opacity: 1;
+}
+
+.walkthrough-card {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  width: min(420px, calc(100vw - 32px));
+  box-sizing: border-box;
+  transform: translateX(-50%);
+  padding: 18px;
+  color: #1f2937;
+  background: rgba(253, 251, 245, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 14px;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+  pointer-events: auto;
+}
+
+.walkthrough-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.walkthrough-dots {
+  display: flex;
+  gap: 5px;
+}
+
+.walkthrough-dots span {
+  width: 7px;
+  height: 7px;
+  background: #d1d5db;
+  border-radius: 50%;
+}
+
+.walkthrough-dots span.active {
+  background: #f97316;
+}
+
+.walkthrough-card h2 {
+  margin: 10px 0 7px;
+  color: #111827;
+  font-size: 20px;
+}
+
+.walkthrough-card p {
+  margin: 0;
+  color: #4b5563;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.walkthrough-hint {
+  margin-top: 12px;
+  padding: 8px 10px;
+  color: #065f46;
+  background: #d1fae5;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.walkthrough-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.walkthrough-actions button,
+.walkthrough-actions a {
+  padding: 8px 11px;
+  border-radius: 7px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.walkthrough-actions a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.walkthrough-actions button {
+  border: 0;
+}
+
+.walkthrough-skip {
+  margin-right: auto;
+  color: #6b7280;
+  background: transparent;
+}
+
+.walkthrough-finish {
+  color: white;
+  background: #059669;
+}
+
+.walkthrough-restart {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  z-index: 1300;
+  width: 34px;
+  height: 34px;
+  color: #1f2937;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #d1d5db;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .walkthrough-card {
+    top: 150px;
+    bottom: auto;
+  }
+}

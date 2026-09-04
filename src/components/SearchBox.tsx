@@ -42,6 +42,7 @@ interface SearchResult {
 
 interface SearchBoxProps {
   setSelectedCoordinates: (coordinates: [number, number]) => void;
+  showFiltersForTour?: boolean;
 }
 
 let manifestPromise: Promise<SearchManifest> | null = null;
@@ -243,6 +244,7 @@ function formatResultMetadata(row: SearchRow): string {
 
 export default function SearchBox({
   setSelectedCoordinates,
+  showFiltersForTour = false,
 }: SearchBoxProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [authorQuery, setAuthorQuery] = useState("");
@@ -268,6 +270,12 @@ export default function SearchBox({
     () => normalizeSearchText(debouncedAuthorQuery),
     [debouncedAuthorQuery]
   );
+
+  useEffect(() => {
+    if (showFiltersForTour) {
+      setShowFilters(true);
+    }
+  }, [showFiltersForTour]);
 
   useEffect(() => {
     const primaryQuery = normalizedSearchQuery || normalizedAuthorQuery;
@@ -489,6 +497,7 @@ export default function SearchBox({
           }}
         />
         <button
+          id="search-filters-button"
           type="button"
           onClick={() => setShowFilters((visible) => !visible)}
           aria-expanded={showFilters}
@@ -506,6 +515,7 @@ export default function SearchBox({
 
       {showFilters && (
         <div
+          id="search-filter-panel"
           style={{
             display: "grid",
             gridTemplateColumns: "1fr 90px 90px",

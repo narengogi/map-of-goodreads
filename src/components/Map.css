@@ -5,4 +5,42 @@
     background: url('../assets/stars.jpeg') center center / cover no-repeat;
     background-color: black; /* fallback */
   }
-  
+
+.map-zoom-controls {
+  position: absolute;
+  left: 12px;
+  bottom: 28px;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid #d1d5db;
+  border-radius: 7px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.map-zoom-controls button {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  color: #1f2937;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: 23px;
+  line-height: 1;
+}
+
+.map-zoom-controls button + button {
+  border-top: 1px solid #d1d5db;
+}
+
+.map-zoom-controls button:hover {
+  background: #f3f4f6;
+}
+
+.map-zoom-controls button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}

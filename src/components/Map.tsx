@@ -9,10 +9,16 @@ function Map({
   selectedBook,
   setSelectedBook,
   selectedCoordinates,
+  onNodeSelected,
+  onEdgeNavigate,
+  onUserZoom,
 }: {
   selectedBook: MapGeoJSONFeature | null;
   setSelectedBook: (book: MapGeoJSONFeature | null) => void;
   selectedCoordinates: [number, number] | null;
+  onNodeSelected?: (book: MapGeoJSONFeature) => void;
+  onEdgeNavigate?: () => void;
+  onUserZoom?: () => void;
 }) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -23,7 +29,14 @@ function Map({
     edgeKey: string;
     atOtherNode: boolean;
   } | null>(null);
+  const onNodeSelectedRef = useRef(onNodeSelected);
+  const onEdgeNavigateRef = useRef(onEdgeNavigate);
+  const onUserZoomRef = useRef(onUserZoom);
   const [map, setMap] = useState<maplibregl.Map | null>(null);
+
+  onNodeSelectedRef.current = onNodeSelected;
+  onEdgeNavigateRef.current = onEdgeNavigate;
+  onUserZoomRef.current = onUserZoom;
 
   useEffect(() => {
     selectedBookRef.current = selectedBook;
@@ -89,11 +102,6 @@ function Map({
       ["get", "id"],
       selectedBook.properties.id,
     ]);
-    map.setFilter("selected-node-edges-layer", [
-      "any",
-      ["==", ["get", "source"], selectedBook.properties.id],
-    ]);
-
     const source = map.getSource("edges") as maplibregl.GeoJSONSource;
     const edgeDataUrl = `${config.edgesBasePath}${selectedGroupId}.geojson`;
     const abortController = new AbortController();
@@ -232,8 +240,8 @@ function Map({
     });
 
     function findNearestCity(point: maplibregl.Point) {
-      let width = 16;
-      let height = 16;
+      const width = 16;
+      const height = 16;
       const features = map.queryRenderedFeatures(
         [
           [point.x - width / 2, point.y - height / 2],
@@ -242,22 +250,7 @@ function Map({
         { layers: ["nodes-layer"] }
       );
       if (!features.length) return;
-      let distance = Infinity;
-      let nearestCity = null;
       return features[0];
-      // console.log(features);
-      // features.forEach((feature) => {
-      //   let bbox = feature.geometry?.bbox;
-      //   if (!bbox) return;
-      //   let dx = bbox[0] - point.x;
-      //   let dy = bbox[1] - point.y;
-      //   let d = dx * dx + dy * dy;
-      //   if (d < distance) {
-      //     distance = d;
-      //     nearestCity = feature;
-      //   }
-      // });
-      // return nearestCity;
     }
 
     function findNearestEdge(point: maplibregl.Point) {
@@ -331,6 +324,9 @@ function Map({
         essential: true,
         duration: 1000,
       });
+      map.once("moveend", () => {
+        onEdgeNavigateRef.current?.();
+      });
 
       edgeNavigationRef.current = {
         edgeKey,
@@ -346,6 +342,7 @@ function Map({
       const nearestCity = findNearestCity(e.point);
       if (nearestCity) {
         setSelectedBook(nearestCity);
+        onNodeSelectedRef.current?.(nearestCity);
         return;
       }
 
@@ -363,6 +360,12 @@ function Map({
       map.getCanvas().style.cursor = "";
     });
 
+    map.on("zoomstart", (event) => {
+      if ((event as typeof event & { originalEvent?: Event }).originalEvent) {
+        onUserZoomRef.current?.();
+      }
+    });
+
     // map.addControl(new maplibregl.AttributionControl({
     //   compact: true,
     //   customAttribution: 'https://github.com/narengogi/map-of-goodreads',
@@ -374,14 +377,47 @@ function Map({
     return () => {
       mapRef.current?.remove();
     };
-  }, []);
+  }, [setSelectedBook]);
+
+  const zoomBy = (amount: number) => {
+    if (!map) return;
+    onUserZoomRef.current?.();
+    map.easeTo({
+      zoom: map.getZoom() + amount,
+      duration: 300,
+    });
+  };
 
   return (
-    <div
-      id="map"
-      ref={mapContainer}
-      style={{ width: "100vw", height: "100vh" }}
-    ></div>
+    <>
+      <div
+        id="map"
+        ref={mapContainer}
+        style={{ width: "100vw", height: "100vh" }}
+      ></div>
+      <div
+        id="map-zoom-controls"
+        className="map-zoom-controls"
+        aria-label="Map zoom controls"
+      >
+        <button
+          type="button"
+          onClick={() => zoomBy(1)}
+          disabled={!map}
+          aria-label="Zoom in"
+        >
+          +
+        </button>
+        <button
+          type="button"
+          onClick={() => zoomBy(-1)}
+          disabled={!map}
+          aria-label="Zoom out"
+        >
+          −
+        </button>
+      </div>
+    </>
   );
 }
 
