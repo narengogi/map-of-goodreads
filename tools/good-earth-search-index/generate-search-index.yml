@@ -1,0 +1,125 @@
+name: Generate enriched search index
+
+on:
+  workflow_dispatch:
+    inputs:
+      tile_limit:
+        description: "Use any non-zero value for the one-tile pilot; use 0 for the full index"
+        required: true
+        default: "1"
+        type: string
+      max_shard_kb:
+        description: "Maximum uncompressed JSON shard size in KB"
+        required: true
+        default: "750"
+        type: string
+      publish:
+        description: "Commit generated files to v2/search"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Check out only required data
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /package.json
+            /scripts/search_index/
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install tile decoder
+        run: npm install --no-save @mapbox/vector-tile@1.3.1 pbf@3.3.0
+
+      - name: Prepare pilot or full tile input
+        env:
+          TILE_LIMIT: ${{ inputs.tile_limit }}
+        run: |
+          if [ "$TILE_LIMIT" = "0" ]; then
+            git sparse-checkout add \
+              /v1/books_map_by_first_few_letters/ \
+              /v1/tiles/14/
+            echo "TILES_ROOT=v1/tiles/14" >> "$GITHUB_ENV"
+          else
+            mkdir -p /tmp/good-earth-pilot-tiles/10580
+            curl -LfsS \
+              https://raw.githubusercontent.com/narengogi/good-earth-data/master/v1/tiles/14/10580/7150.pbf \
+              -o /tmp/good-earth-pilot-tiles/10580/7150.pbf
+            echo "TILES_ROOT=/tmp/good-earth-pilot-tiles" >> "$GITHUB_ENV"
+          fi
+
+      - name: Generate index
+        env:
+          TILE_LIMIT: ${{ inputs.tile_limit }}
+          MAX_SHARD_KB: ${{ inputs.max_shard_kb }}
+        run: |
+          if [ "${{ inputs.publish }}" = "true" ] && [ "$TILE_LIMIT" != "0" ]; then
+            echo "Publishing is only allowed when tile_limit is 0"
+            exit 1
+          fi
+
+          legacy_arguments=()
+          if [ -d v1/books_map_by_first_few_letters ]; then
+            legacy_arguments=(
+              --legacy-root
+              v1/books_map_by_first_few_letters
+            )
+          fi
+
+          node scripts/search_index/build-search-index.mjs \
+            --tiles-root "$TILES_ROOT" \
+            --output v2/search \
+            --limit-tiles 0 \
+            "${legacy_arguments[@]}" \
+            --max-shard-bytes "$((MAX_SHARD_KB * 1024))"
+
+      - name: Validate generated manifest
+        run: |
+          node -e '
+            const fs = require("fs");
+            const manifest = JSON.parse(fs.readFileSync("v2/search/manifest.json"));
+            if (!manifest.stats.uniqueBooks) throw new Error("No books extracted");
+            if (manifest.indexes.title.largestShardBytes > manifest.maxShardBytes) {
+              throw new Error("Title shard exceeds configured size");
+            }
+            if (manifest.indexes.author.largestShardBytes > manifest.maxShardBytes) {
+              throw new Error("Author shard exceeds configured size");
+            }
+            console.log(manifest.stats);
+          '
+
+      - name: Package pilot artifact
+        if: ${{ !inputs.publish }}
+        run: tar -czf enriched-search-index.tar.gz v2/search
+
+      - name: Upload pilot artifact
+        if: ${{ !inputs.publish }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: enriched-search-index
+          path: enriched-search-index.tar.gz
+          retention-days: 7
+
+      - name: Commit full index
+        if: ${{ inputs.publish }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add --sparse v2/search
+          git commit -m "Generate enriched v2 search index"
+          git push
