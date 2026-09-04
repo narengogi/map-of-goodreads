@@ -122,7 +122,7 @@ export default function Walkthrough({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                See on GitHub ⭐
+                GitHub ⭐
               </a>
               <button
                 type="button"
