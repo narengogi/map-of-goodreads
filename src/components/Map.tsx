@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, memo, useState } from "react";
 import maplibregl, { MapGeoJSONFeature } from "maplibre-gl";
+import type { FeatureCollection, LineString } from "geojson";
 import "maplibre-gl/dist/maplibre-gl.css";
 import config from "../config";
 import "./Map.css";
@@ -15,7 +16,19 @@ function Map({
 }) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
+  const selectedBookRef = useRef<MapGeoJSONFeature | null>(selectedBook);
+  const edgeDataRef = useRef<FeatureCollection<LineString> | null>(null);
+  const edgeGroupIdRef = useRef<string | null>(null);
+  const edgeNavigationRef = useRef<{
+    edgeKey: string;
+    atOtherNode: boolean;
+  } | null>(null);
   const [map, setMap] = useState<maplibregl.Map | null>(null);
+
+  useEffect(() => {
+    selectedBookRef.current = selectedBook;
+    edgeNavigationRef.current = null;
+  }, [selectedBook]);
 
   useEffect(() => {
     if (!map || !selectedCoordinates) return;
@@ -70,7 +83,7 @@ function Map({
 
   useEffect(() => {
     if (!map || !selectedBook) return;
-    const selectedGroupId = selectedBook.properties.groupId;
+    const selectedGroupId = String(selectedBook.properties.groupId);
     map.setFilter("selected-node-layer", [
       "==",
       ["get", "id"],
@@ -81,14 +94,36 @@ function Map({
       ["==", ["get", "source"], selectedBook.properties.id],
     ]);
 
-    const source = map.getSource("edges");
-    // @ts-ignore
-    if (source?._data?.split("_")[1]?.split(".")[0] != selectedGroupId) {
-      // @ts-ignore
-      source.setData(
-        `${config.edgesBasePath}${selectedGroupId}.geojson`
-      );
+    const source = map.getSource("edges") as maplibregl.GeoJSONSource;
+    const edgeDataUrl = `${config.edgesBasePath}${selectedGroupId}.geojson`;
+    const abortController = new AbortController();
+
+    if (
+      edgeGroupIdRef.current !== selectedGroupId ||
+      !edgeDataRef.current
+    ) {
+      edgeGroupIdRef.current = selectedGroupId;
+      edgeDataRef.current = null;
+
+      fetch(edgeDataUrl, { signal: abortController.signal })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Unable to load edges: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((edgeData: FeatureCollection<LineString>) => {
+          if (edgeGroupIdRef.current !== selectedGroupId) return;
+          edgeDataRef.current = edgeData;
+          source.setData(edgeData);
+        })
+        .catch((error) => {
+          if (error.name === "AbortError") return;
+          console.error("Error fetching edge data:", error);
+          source.setData(edgeDataUrl);
+        });
     }
+
     map.setFilter("edges-layer", [
       "all",
       ["==", "$type", "LineString"],
@@ -102,7 +137,11 @@ function Map({
       essential: true, // this animation is considered essential for the user experience
       duration: 1000 // duration of the animation in milliseconds
     });
-  }, [selectedBook]);
+
+    return () => {
+      abortController.abort();
+    };
+  }, [map, selectedBook]);
 
   useEffect(() => {
     const map = new maplibregl.Map({
@@ -221,14 +260,107 @@ function Map({
       // return nearestCity;
     }
 
+    function findNearestEdge(point: maplibregl.Point) {
+      const radius = 6;
+      const features = map.queryRenderedFeatures(
+        [
+          [point.x - radius, point.y - radius],
+          [point.x + radius, point.y + radius],
+        ],
+        { layers: ["edges-layer"] }
+      );
+
+      return features[0];
+    }
+
+    function navigateAlongEdge(edge: MapGeoJSONFeature) {
+      const selected = selectedBookRef.current;
+      const fullEdge = edgeDataRef.current?.features.find((feature) => {
+        return (
+          String(feature.properties?.source) ===
+            String(edge.properties?.source) &&
+          String(feature.properties?.target) ===
+            String(edge.properties?.target)
+        );
+      });
+      const edgeGeometry = fullEdge?.geometry ?? edge.geometry;
+
+      if (
+        !selected ||
+        selected.geometry.type !== "Point" ||
+        edgeGeometry.type !== "LineString" ||
+        edgeGeometry.coordinates.length < 2
+      ) {
+        return;
+      }
+
+      const selectedCoordinates = selected.geometry.coordinates as [
+        number,
+        number
+      ];
+      const edgeCoordinates = edgeGeometry.coordinates as [number, number][];
+      const firstEndpoint = edgeCoordinates[0];
+      const lastEndpoint = edgeCoordinates[edgeCoordinates.length - 1];
+      const selectedLngLat = maplibregl.LngLat.convert(selectedCoordinates);
+      const firstEndpointDistance = selectedLngLat.distanceTo(
+        maplibregl.LngLat.convert(firstEndpoint)
+      );
+      const lastEndpointDistance = selectedLngLat.distanceTo(
+        maplibregl.LngLat.convert(lastEndpoint)
+      );
+      const otherEndpoint =
+        firstEndpointDistance > lastEndpointDistance
+          ? firstEndpoint
+          : lastEndpoint;
+      const edgeKey = [
+        edge.properties?.source,
+        edge.properties?.target,
+        otherEndpoint[0],
+        otherEndpoint[1],
+      ].join(":");
+      const previousNavigation = edgeNavigationRef.current;
+      const returnToSelectedNode =
+        previousNavigation?.edgeKey === edgeKey &&
+        previousNavigation.atOtherNode;
+
+      map.flyTo({
+        center: returnToSelectedNode
+          ? selectedCoordinates
+          : otherEndpoint,
+        zoom: 14,
+        essential: true,
+        duration: 1000,
+      });
+
+      edgeNavigationRef.current = {
+        edgeKey,
+        atOtherNode: !returnToSelectedNode,
+      };
+    }
+
     map.on("load", () => {
       map.setProjection({ type: "globe" });
     });
 
     map.on("click", (e) => {
       const nearestCity = findNearestCity(e.point);
-      if (!nearestCity) return;
-      setSelectedBook(nearestCity);
+      if (nearestCity) {
+        setSelectedBook(nearestCity);
+        return;
+      }
+
+      const nearestEdge = findNearestEdge(e.point);
+      if (nearestEdge) {
+        navigateAlongEdge(nearestEdge);
+      }
+    });
+
+    map.on("mouseenter", "edges-layer", () => {
+      map.getCanvas().style.cursor = "pointer";
+    });
+
+    map.on("mouseleave", "edges-layer", () => {
+      map.getCanvas().style.cursor = "";
     });
 
     // map.addControl(new maplibregl.AttributionControl({
