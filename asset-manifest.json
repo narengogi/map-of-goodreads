@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/map-of-goodreads/static/css/main.4c212140.css",
-    "main.js": "/map-of-goodreads/static/js/main.cdd869f1.js",
+    "main.js": "/map-of-goodreads/static/js/main.f8783202.js",
     "static/media/stars.jpeg": "/map-of-goodreads/static/media/stars.9637a602623da3580909.jpeg",
     "index.html": "/map-of-goodreads/index.html",
     "main.4c212140.css.map": "/map-of-goodreads/static/css/main.4c212140.css.map",
-    "main.cdd869f1.js.map": "/map-of-goodreads/static/js/main.cdd869f1.js.map"
+    "main.f8783202.js.map": "/map-of-goodreads/static/js/main.f8783202.js.map"
   },
   "entrypoints": [
     "static/css/main.4c212140.css",
-    "static/js/main.cdd869f1.js"
+    "static/js/main.f8783202.js"
   ]
 }
