@@ -60,10 +60,12 @@ I still haven't gotten this down perfectly, you'd have noticed that the clusters
 ## TODO
 - [X] Generate tiles for zoom levels greater than 9 / 
 alternatively fix the layout so that the points are more spread out and rhe containers are larger
-- [ ] Use a library for fuzzy search (there are cases like "Gödel Escher Bach" eith univode characters that dont get searched magbe I should clean these titles)
+- [X] Use a library for fuzzy search (there are cases like "Gödel Escher Bach" eith univode characters that dont get searched magbe I should clean these titles)
+- [X] Improve navigation from edges and nodes
+- [X] Add a walkthrough
 
 ## Acknowledgements
-- Shoutout to UC San Diego for open sourcing the [dataset](https://cseweb.ucsd.edu/~jmcauley/datasets/goodreads.html)
+- Shout-out to UC San Diego for open sourcing the [dataset](https://cseweb.ucsd.edu/~jmcauley/datasets/goodreads.html)
 the data is quite old(2017) but its a good starting point. I'll try scraping the data afresh when I have some time
 - This project is inspired from [Andrei Kaschas](https://x.com/anvaka?s=21) [Map of Reddit](https://anvaka.github.io/map-of-reddit), which is absolutely 10x better ui
-- Also https://vast.ai is a pretty cool platform. I ran all my cuda code on an RTX 5090 and it barely cost me like $4 for end to end experimentation
+- Also https://vast.ai is a pretty cool platform. I ran all my CUDA code on an RTX 5090 and it cost me like $4 for end to end experimentation
